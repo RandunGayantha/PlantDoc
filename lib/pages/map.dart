@@ -1,17 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class Map extends StatefulWidget {
-  const Map({super.key});
+class GoogleMapsScreen extends StatefulWidget {
+  const GoogleMapsScreen({super.key});
 
   @override
-  State<Map> createState() => _MapState();
+  State<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
 }
 
-class _MapState extends State<Map> {
+class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
+  final CameraPosition _initialPosition = const CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  final Set<Marker> _markers = {
+    const Marker(
+      markerId: MarkerId('my_location'),
+      position: LatLng(37.42796133580664, -122.085749655962),
+      infoWindow: InfoWindow(title: 'My Location'),
+    ),
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("This is Map"),
+      body: GoogleMap(
+        mapType: MapType.hybrid,
+        initialCameraPosition: _initialPosition,
+        markers: _markers,
+        myLocationEnabled: false,
+        myLocationButtonEnabled: false,
+        zoomControlsEnabled: true,
+      ),
     );
   }
 }
