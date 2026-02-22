@@ -1,7 +1,172 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 
+// ─── Data Model ───────────────────────────────────────────────────────────────
+
+class ChilliDisease {
+  final String id;
+  final String name;
+  final String emoji;
+  final String confidence;
+  final double confidenceValue;
+  final String severity;
+  final Color severityColor;
+  final String description;
+  final List<String> symptoms;
+  final List<Map<String, String>> treatments;
+  final Color accentColor;
+  final Color lightColor;
+
+  const ChilliDisease({
+    required this.id,
+    required this.name,
+    required this.emoji,
+    required this.confidence,
+    required this.confidenceValue,
+    required this.severity,
+    required this.severityColor,
+    required this.description,
+    required this.symptoms,
+    required this.treatments,
+    required this.accentColor,
+    required this.lightColor,
+  });
+}
+
+final List<ChilliDisease> chilliDiseases = [
+  ChilliDisease(
+    id: 'healthy',
+    name: 'Healthy Chilli Leaves',
+    emoji: '🌿',
+    confidence: '98.2%',
+    confidenceValue: 0.982,
+    severity: 'Healthy',
+    severityColor: Color(0xFF22C55E),
+    description:
+        'Your chilli plant appears to be in excellent health. Leaves show vibrant green coloration with no signs of infection, discoloration, or structural damage. Continue your current care routine.',
+    symptoms: [
+      'Deep green uniform leaf color',
+      'Firm and smooth leaf texture',
+      'No spots, curling, or lesions',
+      'Normal leaf size and shape',
+    ],
+    treatments: [
+      {'title': 'Maintain Watering Schedule', 'desc': 'Water consistently without waterlogging the roots'},
+      {'title': 'Regular Fertilization', 'desc': 'Apply balanced NPK fertilizer every 3–4 weeks'},
+      {'title': 'Monitor Regularly', 'desc': 'Check weekly for early signs of pest or disease'},
+      {'title': 'Adequate Sunlight', 'desc': 'Ensure 6–8 hours of direct sunlight daily'},
+    ],
+    accentColor: Color(0xFF16A34A),
+    lightColor: Color(0xFFDCFCE7),
+  ),
+  ChilliDisease(
+    id: 'leaf_curl',
+    name: 'Chilli Leaf Curl Virus',
+    emoji: '🦠',
+    confidence: '91.4%',
+    confidenceValue: 0.914,
+    severity: 'Severe',
+    severityColor: Color(0xFFEF4444),
+    description:
+        'Leaf Curl Virus (ChiLCV) is transmitted by whiteflies and causes severe curling, crinkling, and stunting of chilli leaves. Infected plants show reduced yield and fruit quality significantly.',
+    symptoms: [
+      'Upward or downward curling of leaves',
+      'Yellowing and mosaic patterns',
+      'Stunted plant growth',
+      'Distorted and brittle leaves',
+    ],
+    treatments: [
+      {'title': 'Control Whiteflies', 'desc': 'Apply imidacloprid or thiamethoxam insecticide spray'},
+      {'title': 'Remove Infected Plants', 'desc': 'Uproot and destroy infected plants immediately'},
+      {'title': 'Use Reflective Mulch', 'desc': 'Silver mulch repels whitefly vectors effectively'},
+      {'title': 'Resistant Varieties', 'desc': 'Replant using virus-resistant chilli cultivars'},
+    ],
+    accentColor: Color(0xFFDC2626),
+    lightColor: Color(0xFFFFECEC),
+  ),
+  ChilliDisease(
+    id: 'cercospora',
+    name: 'Chilli Cercospora Leaf Spot',
+    emoji: '🍂',
+    confidence: '88.6%',
+    confidenceValue: 0.886,
+    severity: 'Moderate',
+    severityColor: Color(0xFFF59E0B),
+    description:
+        'Cercospora leaf spot is a fungal disease caused by Cercospora capsici. It produces circular spots with white/gray centers and dark brown borders on chilli leaves, leading to premature defoliation.',
+    symptoms: [
+      'Circular spots with gray centers',
+      'Dark brown to purple borders',
+      'Premature yellowing and leaf drop',
+      'Spots enlarge in humid conditions',
+    ],
+    treatments: [
+      {'title': 'Fungicide Application', 'desc': 'Spray mancozeb or chlorothalonil at 0.25% concentration'},
+      {'title': 'Improve Air Circulation', 'desc': 'Prune dense foliage to reduce leaf wetness'},
+      {'title': 'Avoid Overhead Irrigation', 'desc': 'Use drip irrigation to keep leaves dry'},
+      {'title': 'Crop Rotation', 'desc': 'Rotate with non-solanaceous crops each season'},
+    ],
+    accentColor: Color(0xFFD97706),
+    lightColor: Color(0xFFFEF3C7),
+  ),
+  ChilliDisease(
+    id: 'anthracnose',
+    name: 'Chilli Anthracnose',
+    emoji: '🍁',
+    confidence: '93.1%',
+    confidenceValue: 0.931,
+    severity: 'Severe',
+    severityColor: Color(0xFFEF4444),
+    description:
+        'Anthracnose is caused by Colletotrichum species and affects both leaves and fruits. Dark, sunken lesions appear on leaves and spread rapidly in warm, wet weather causing significant crop losses.',
+    symptoms: [
+      'Dark sunken lesions on leaves',
+      'Orange-pink spore masses visible',
+      'Lesions coalesce in wet weather',
+      'Tip dieback and defoliation',
+    ],
+    treatments: [
+      {'title': 'Copper-based Fungicide', 'desc': 'Apply copper oxychloride spray every 10–14 days'},
+      {'title': 'Seed Treatment', 'desc': 'Treat seeds with carbendazim before sowing'},
+      {'title': 'Remove Debris', 'desc': 'Clear fallen leaves and infected material from field'},
+      {'title': 'Hot Water Seed Treatment', 'desc': 'Soak seeds in 52°C water for 30 minutes'},
+    ],
+    accentColor: Color(0xFFB91C1C),
+    lightColor: Color(0xFFFFE4E4),
+  ),
+  ChilliDisease(
+    id: 'powdery_mildew',
+    name: 'Chilli Powdery Mildew',
+    emoji: '🌫️',
+    confidence: '89.9%',
+    confidenceValue: 0.899,
+    severity: 'Mild',
+    severityColor: Color(0xFF8B5CF6),
+    description:
+        'Powdery mildew is caused by Leveillula taurica and appears as white powdery patches on the upper and lower leaf surfaces. It thrives in warm, dry climates with high humidity and can defoliate plants rapidly.',
+    symptoms: [
+      'White powdery coating on leaves',
+      'Yellowing beneath powdery patches',
+      'Leaf curling and distortion',
+      'Premature leaf drop',
+    ],
+    treatments: [
+      {'title': 'Sulfur-based Fungicide', 'desc': 'Apply wettable sulfur spray at 0.3% solution'},
+      {'title': 'Neem Oil Spray', 'desc': 'Use neem oil 2ml/L water as organic alternative'},
+      {'title': 'Potassium Bicarbonate', 'desc': 'Spray 1% solution to neutralize fungal growth'},
+      {'title': 'Increase Spacing', 'desc': 'Improve plant spacing to reduce humidity buildup'},
+    ],
+    accentColor: Color(0xFF7C3AED),
+    lightColor: Color(0xFFF3E8FF),
+  ),
+];
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
+
 class DiagnosisResultScreen extends StatefulWidget {
-  const DiagnosisResultScreen({super.key});
+  final ChilliDisease? disease;
+
+  const DiagnosisResultScreen({super.key, this.disease});
 
   @override
   State<DiagnosisResultScreen> createState() => _DiagnosisResultScreenState();
@@ -12,51 +177,20 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
   late AnimationController _controller;
   late Animation<double> _fadeIn;
   late Animation<Offset> _slideUp;
-
-  // Sample diagnosis data
-  final String diseaseName = "Bacterial Leaf Blight";
-  final String confidence = "94.7%";
-  final String severity = "Moderate";
-  final Color severityColor = const Color(0xFFF59E0B);
-  final String description =
-      "Bacterial Leaf Blight (BLB) is a serious rice disease caused by Xanthomonas oryzae. It causes yellowing and wilting of leaves, reducing photosynthesis and yield significantly.";
-
-  final List<Map<String, String>> symptoms = [
-    {"icon": "🍃", "text": "Yellow to white lesions on leaf edges"},
-    {"icon": "💧", "text": "Bacterial ooze on leaf surface"},
-    {"icon": "🌾", "text": "Wilting of whole tillers"},
-    {"icon": "📉", "text": "Reduced grain filling"},
-  ];
-
-  final List<Map<String, String>> treatments = [
-    {
-      "title": "Copper-based Bactericide",
-      "desc": "Apply copper oxychloride 0.3% spray"
-    },
-    {
-      "title": "Seed Treatment",
-      "desc": "Treat seeds with Streptomycin before sowing"
-    },
-    {
-      "title": "Field Drainage",
-      "desc": "Improve drainage to reduce humidity levels"
-    },
-    {
-      "title": "Remove Infected Plants",
-      "desc": "Uproot and destroy infected plant material"
-    },
-  ];
+  late ChilliDisease _selectedDisease;
+  bool _saved = false;
 
   @override
   void initState() {
     super.initState();
+    _selectedDisease = widget.disease ?? chilliDiseases[0];
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 800),
     );
     _fadeIn = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     _slideUp = Tween<Offset>(
-      begin: const Offset(0, 0.12),
+      begin: const Offset(0, 0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
@@ -68,36 +202,134 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     super.dispose();
   }
 
+  void _switchDisease(ChilliDisease d) {
+    setState(() => _selectedDisease = d);
+    _controller.forward(from: 0);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final d = _selectedDisease;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F2),
-      body: FadeTransition(
-        opacity: _fadeIn,
-        child: SlideTransition(
-          position: _slideUp,
-          child: CustomScrollView(
-            slivers: [
-              _buildAppBar(context),
-              SliverToBoxAdapter(
+      backgroundColor: const Color(0xFFF7F8F5),
+      body: CustomScrollView(
+        slivers: [
+          _buildAppBar(d),
+          SliverToBoxAdapter(
+            child: FadeTransition(
+              opacity: _fadeIn,
+              child: SlideTransition(
+                position: _slideUp,
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 30),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildResultCard(),
+                      _buildDiseaseSelector(),
+                      const SizedBox(height: 20),
+                      _buildResultCard(d),
                       const SizedBox(height: 20),
                       _buildSectionTitle("Symptoms Detected"),
                       const SizedBox(height: 12),
-                      _buildSymptomsList(),
+                      _buildSymptomsList(d),
                       const SizedBox(height: 20),
                       _buildSectionTitle("Recommended Treatments"),
                       const SizedBox(height: 12),
-                      _buildTreatmentList(),
-                      const SizedBox(height: 20),
-                      _buildActionButtons(),
-                      const SizedBox(height: 30),
+                      _buildTreatmentList(d),
+                      const SizedBox(height: 24),
+                      _buildActionButtons(d),
                     ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── App Bar ──────────────────────────────────────────────────────────────────
+
+  Widget _buildAppBar(ChilliDisease d) {
+    return SliverAppBar(
+      expandedHeight: 200,
+      pinned: true,
+      backgroundColor: const Color(0xFF7C2D12),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.share_outlined, color: Colors.white),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(
+            _saved ? Icons.bookmark : Icons.bookmark_border,
+            color: Colors.white,
+          ),
+          onPressed: () => setState(() => _saved = !_saved),
+        ),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Diagnosis Result",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 17,
+                letterSpacing: 0.2,
+              ),
+            ),
+            Text(
+              "🌶️  Chilli Plant Analysis",
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.75),
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+        background: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF7C2D12), Color(0xFFEA580C)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -20,
+                top: 10,
+                child: Opacity(
+                  opacity: 0.08,
+                  child: const Text("🌶️",
+                      style: TextStyle(fontSize: 180)),
+                ),
+              ),
+              Positioned(
+                left: 20,
+                bottom: 60,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    "🤖  AI-Powered Plant Doctor",
+                    style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
               ),
@@ -108,69 +340,75 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 180,
-      pinned: true,
-      backgroundColor: const Color(0xFF2D6A4F),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.share_outlined, color: Colors.white),
-          onPressed: () {},
+  // ── Disease Selector ─────────────────────────────────────────────────────────
+
+  Widget _buildDiseaseSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Select Diagnosis",
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF888888),
+            letterSpacing: 0.5,
+          ),
         ),
-        IconButton(
-          icon: const Icon(Icons.bookmark_border, color: Colors.white),
-          onPressed: () {},
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 44,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: chilliDiseases.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, i) {
+              final d = chilliDiseases[i];
+              final selected = d.id == _selectedDisease.id;
+              return GestureDetector(
+                onTap: () => _switchDisease(d),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: selected ? d.accentColor : Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
+                      color: selected
+                          ? d.accentColor
+                          : const Color(0xFFE0E0E0),
+                    ),
+                    boxShadow: selected
+                        ? [
+                            BoxShadow(
+                              color: d.accentColor.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            )
+                          ]
+                        : [],
+                  ),
+                  child: Text(
+                    "${d.emoji}  ${d.id == 'healthy' ? 'Healthy' : d.name.split(' ').skip(1).take(2).join(' ')}",
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: selected ? Colors.white : const Color(0xFF444444),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ],
-      flexibleSpace: FlexibleSpaceBar(
-        title: const Text(
-          "Diagnosis Result",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
-        ),
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF1B4332), Color(0xFF52B788)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -30,
-                top: -20,
-                child: Opacity(
-                  opacity: 0.1,
-                  child: Icon(Icons.eco,
-                      size: 200, color: Colors.white),
-                ),
-              ),
-              const Positioned(
-                bottom: 60,
-                left: 20,
-                child: Text(
-                  "🌾  Plant Health Analysis",
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
-  Widget _buildResultCard() {
+  // ── Result Card ──────────────────────────────────────────────────────────────
+
+  Widget _buildResultCard(ChilliDisease d) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -191,12 +429,16 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD8F3DC),
-                  borderRadius: BorderRadius.circular(14),
+                  color: d.lightColor,
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Text("🦠", style: TextStyle(fontSize: 28)),
+                child: Center(
+                  child: Text(d.emoji,
+                      style: const TextStyle(fontSize: 30)),
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -204,19 +446,20 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      diseaseName,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      d.name,
+                      style: TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF1B4332),
+                        color: d.accentColor,
+                        height: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
                       children: [
-                        _buildBadge(severity, severityColor),
-                        const SizedBox(width: 8),
-                        _buildBadge("AI Detected", const Color(0xFF52B788)),
+                        _buildBadge(d.severity, d.severityColor),
+                        _buildBadge("🌶️ Chilli", const Color(0xFFEA580C)),
                       ],
                     ),
                   ],
@@ -225,42 +468,50 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
             ],
           ),
           const SizedBox(height: 18),
-          // Confidence bar
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Confidence Level",
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500)),
-              Text(confidence,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF2D6A4F))),
+              const Text(
+                "Confidence Level",
+                style: TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF888888),
+                    fontWeight: FontWeight.w500),
+              ),
+              Text(
+                d.confidence,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: d.accentColor,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: 0.947,
-              minHeight: 8,
-              backgroundColor: const Color(0xFFD8F3DC),
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(Color(0xFF52B788)),
+              value: d.confidenceValue,
+              minHeight: 9,
+              backgroundColor: d.lightColor,
+              valueColor: AlwaysStoppedAnimation<Color>(d.accentColor),
             ),
           ),
           const SizedBox(height: 16),
-          const Divider(color: Color(0xFFF0F0F0)),
-          const SizedBox(height: 12),
-          Text(
-            description,
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: Color(0xFF555555),
-              height: 1.6,
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: d.lightColor.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              d.description,
+              style: const TextStyle(
+                fontSize: 13.5,
+                color: Color(0xFF444444),
+                height: 1.65,
+              ),
             ),
           ),
         ],
@@ -272,19 +523,21 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withOpacity(0.13),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: color.withOpacity(0.9),
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+          color: color,
         ),
       ),
     );
   }
+
+  // ── Section Title ────────────────────────────────────────────────────────────
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -292,28 +545,30 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       style: const TextStyle(
         fontSize: 17,
         fontWeight: FontWeight.w800,
-        color: Color(0xFF1B4332),
+        color: Color(0xFF1A1A1A),
       ),
     );
   }
 
-  Widget _buildSymptomsList() {
+  // ── Symptoms ─────────────────────────────────────────────────────────────────
+
+  Widget _buildSymptomsList(ChilliDisease d) {
+    final icons = ["🔍", "🧬", "📍", "⚠️"];
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           )
         ],
       ),
       child: Column(
-        children: symptoms.asMap().entries.map((entry) {
+        children: d.symptoms.asMap().entries.map((entry) {
           final i = entry.key;
-          final s = entry.value;
           return Column(
             children: [
               Padding(
@@ -321,23 +576,24 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
-                    Text(s["icon"]!, style: const TextStyle(fontSize: 22)),
-                    const SizedBox(width: 14),
+                    Text(icons[i % icons.length],
+                        style: const TextStyle(fontSize: 20)),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        s["text"]!,
+                        entry.value,
                         style: const TextStyle(
-                            fontSize: 14, color: Color(0xFF333333)),
+                            fontSize: 13.5, color: Color(0xFF333333)),
                       ),
                     ),
-                    const Icon(Icons.check_circle,
-                        color: Color(0xFF52B788), size: 18),
+                    Icon(Icons.check_circle,
+                        color: d.accentColor, size: 18),
                   ],
                 ),
               ),
-              if (i < symptoms.length - 1)
+              if (i < d.symptoms.length - 1)
                 const Divider(
-                    height: 1, color: Color(0xFFF5F5F5), indent: 52),
+                    height: 1, color: Color(0xFFF5F5F5), indent: 48),
             ],
           );
         }).toList(),
@@ -345,17 +601,19 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     );
   }
 
-  Widget _buildTreatmentList() {
+  // ── Treatments ───────────────────────────────────────────────────────────────
+
+  Widget _buildTreatmentList(ChilliDisease d) {
     return Column(
-      children: treatments.asMap().entries.map((entry) {
+      children: d.treatments.asMap().entries.map((entry) {
         final i = entry.key;
         final t = entry.value;
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.04),
@@ -370,7 +628,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2D6A4F),
+                  color: d.accentColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Center(
@@ -378,12 +636,12 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                     "${i + 1}",
                     style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         fontSize: 15),
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,10 +650,10 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                       t["title"]!,
                       style: const TextStyle(
                           fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xFF1B4332)),
+                          fontSize: 13.5,
+                          color: Color(0xFF1A1A1A)),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     Text(
                       t["desc"]!,
                       style: const TextStyle(
@@ -404,7 +662,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Color(0xFFCCCCCC)),
+              Icon(Icons.chevron_right, color: d.accentColor.withOpacity(0.4)),
             ],
           ),
         );
@@ -412,7 +670,9 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     );
   }
 
-  Widget _buildActionButtons() {
+  // ── Action Buttons ───────────────────────────────────────────────────────────
+
+  Widget _buildActionButtons(ChilliDisease d) {
     return Column(
       children: [
         SizedBox(
@@ -420,13 +680,13 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
           height: 52,
           child: ElevatedButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.local_pharmacy_outlined, size: 20),
+            icon: const Icon(Icons.agriculture_outlined, size: 20),
             label: const Text(
               "Get Expert Advice",
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2D6A4F),
+              backgroundColor: d.accentColor,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
@@ -434,20 +694,20 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         SizedBox(
           width: double.infinity,
           height: 52,
           child: OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.camera_alt_outlined, size: 20),
             label: const Text(
-              "Scan Again",
+              "Scan Another Leaf",
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFF2D6A4F),
-              side: const BorderSide(color: Color(0xFF2D6A4F), width: 1.5),
+              foregroundColor: d.accentColor,
+              side: BorderSide(color: d.accentColor, width: 1.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
             ),
@@ -456,6 +716,4 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       ],
     );
   }
-} 
-
-//test
+}
