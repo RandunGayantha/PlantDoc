@@ -36,7 +36,7 @@ class ChilliDisease {
 final List<ChilliDisease> chilliDiseases = [
   ChilliDisease(
     id: 'healthy',
-    name: 'Healthy Chilli Leaves',
+    name: 'Healthy Leaf',
     emoji: '🌿',
     confidence: '98.2%',
     confidenceValue: 0.982,
@@ -60,33 +60,33 @@ final List<ChilliDisease> chilliDiseases = [
     lightColor: Color(0xFFDCFCE7),
   ),
   ChilliDisease(
-    id: 'leaf_curl',
-    name: 'Chilli Leaf Curl Virus',
-    emoji: '🦠',
-    confidence: '91.4%',
-    confidenceValue: 0.914,
+    id: 'bacterial_spot',
+    name: 'Bacterial Spot',
+    emoji: '🔴',
+    confidence: '90.3%',
+    confidenceValue: 0.903,
     severity: 'Severe',
     severityColor: Color(0xFFEF4444),
     description:
-        'Leaf Curl Virus (ChiLCV) is transmitted by whiteflies and causes severe curling, crinkling, and stunting of chilli leaves. Infected plants show reduced yield and fruit quality significantly.',
+        'Bacterial Spot is caused by Xanthomonas campestris and appears as small, water-soaked spots on leaves that turn dark brown or black. It spreads rapidly in warm, wet conditions and can cause severe defoliation.',
     symptoms: [
-      'Upward or downward curling of leaves',
-      'Yellowing and mosaic patterns',
-      'Stunted plant growth',
-      'Distorted and brittle leaves',
+      'Small water-soaked spots on leaves',
+      'Spots turn dark brown or black',
+      'Yellow halo around lesions',
+      'Premature leaf drop in severe cases',
     ],
     treatments: [
-      {'title': 'Control Whiteflies', 'desc': 'Apply imidacloprid or thiamethoxam insecticide spray'},
-      {'title': 'Remove Infected Plants', 'desc': 'Uproot and destroy infected plants immediately'},
-      {'title': 'Use Reflective Mulch', 'desc': 'Silver mulch repels whitefly vectors effectively'},
-      {'title': 'Resistant Varieties', 'desc': 'Replant using virus-resistant chilli cultivars'},
+      {'title': 'Copper-based Bactericide', 'desc': 'Spray copper hydroxide or copper oxychloride weekly'},
+      {'title': 'Avoid Overhead Watering', 'desc': 'Use drip irrigation to keep foliage dry'},
+      {'title': 'Remove Infected Leaves', 'desc': 'Prune and destroy heavily infected plant parts'},
+      {'title': 'Crop Rotation', 'desc': 'Rotate crops to prevent soil-borne bacterial buildup'},
     ],
     accentColor: Color(0xFFDC2626),
     lightColor: Color(0xFFFFECEC),
   ),
   ChilliDisease(
     id: 'cercospora',
-    name: 'Chilli Cercospora Leaf Spot',
+    name: 'Cercospora Leaf Spot',
     emoji: '🍂',
     confidence: '88.6%',
     confidenceValue: 0.886,
@@ -135,26 +135,76 @@ final List<ChilliDisease> chilliDiseases = [
     lightColor: Color(0xFFFFE4E4),
   ),
   ChilliDisease(
-    id: 'powdery_mildew',
-    name: 'Chilli Powdery Mildew',
-    emoji: '🌫️',
-    confidence: '89.9%',
-    confidenceValue: 0.899,
-    severity: 'Mild',
-    severityColor: Color(0xFF8B5CF6),
+    id: 'curl_virus',
+    name: 'Curl Virus',
+    emoji: '🦠',
+    confidence: '91.4%',
+    confidenceValue: 0.914,
+    severity: 'Severe',
+    severityColor: Color(0xFFEF4444),
     description:
-        'Powdery mildew is caused by Leveillula taurica and appears as white powdery patches on the upper and lower leaf surfaces. It thrives in warm, dry climates with high humidity and can defoliate plants rapidly.',
+        'Leaf Curl Virus (ChiLCV) is transmitted by whiteflies and causes severe curling, crinkling, and stunting of chilli leaves. Infected plants show reduced yield and fruit quality significantly.',
     symptoms: [
-      'White powdery coating on leaves',
-      'Yellowing beneath powdery patches',
-      'Leaf curling and distortion',
-      'Premature leaf drop',
+      'Upward or downward curling of leaves',
+      'Yellowing and mosaic patterns',
+      'Stunted plant growth',
+      'Distorted and brittle leaves',
     ],
     treatments: [
-      {'title': 'Sulfur-based Fungicide', 'desc': 'Apply wettable sulfur spray at 0.3% solution'},
-      {'title': 'Neem Oil Spray', 'desc': 'Use neem oil 2ml/L water as organic alternative'},
-      {'title': 'Potassium Bicarbonate', 'desc': 'Spray 1% solution to neutralize fungal growth'},
-      {'title': 'Increase Spacing', 'desc': 'Improve plant spacing to reduce humidity buildup'},
+      {'title': 'Control Whiteflies', 'desc': 'Apply imidacloprid or thiamethoxam insecticide spray'},
+      {'title': 'Remove Infected Plants', 'desc': 'Uproot and destroy infected plants immediately'},
+      {'title': 'Use Reflective Mulch', 'desc': 'Silver mulch repels whitefly vectors effectively'},
+      {'title': 'Resistant Varieties', 'desc': 'Replant using virus-resistant chilli cultivars'},
+    ],
+    accentColor: Color(0xFFDC2626),
+    lightColor: Color(0xFFFFECEC),
+  ),
+  ChilliDisease(
+    id: 'nutrition_deficiency',
+    name: 'Nutrition Deficiency',
+    emoji: '🌱',
+    confidence: '87.5%',
+    confidenceValue: 0.875,
+    severity: 'Mild',
+    severityColor: Color(0xFF10B981),
+    description:
+        'Nutritional deficiency in chilli plants occurs when essential minerals like nitrogen, potassium, or magnesium are lacking. Leaves show yellowing, browning, or abnormal coloration patterns depending on the deficient nutrient.',
+    symptoms: [
+      'Yellowing between leaf veins (chlorosis)',
+      'Brown or necrotic leaf edges',
+      'Stunted or slow plant growth',
+      'Pale or discolored new leaves',
+    ],
+    treatments: [
+      {'title': 'Soil Testing', 'desc': 'Test soil pH and nutrient levels before treatment'},
+      {'title': 'Balanced Fertilizer', 'desc': 'Apply NPK 19:19:19 fertilizer as foliar spray'},
+      {'title': 'Magnesium Supplement', 'desc': 'Apply Epsom salt (MgSO4) solution 1% spray'},
+      {'title': 'Adjust Soil pH', 'desc': 'Maintain soil pH between 6.0–6.8 for nutrient uptake'},
+    ],
+    accentColor: Color(0xFF059669),
+    lightColor: Color(0xFFD1FAE5),
+  ),
+  ChilliDisease(
+    id: 'white_spot',
+    name: 'White Spot',
+    emoji: '⚪',
+    confidence: '89.2%',
+    confidenceValue: 0.892,
+    severity: 'Moderate',
+    severityColor: Color(0xFFF59E0B),
+    description:
+        'White spot disease in chilli is caused by the fungus Phloeospora capsici. It produces small white to pale gray circular spots on leaves, which can merge and cause significant leaf area loss if left untreated.',
+    symptoms: [
+      'Small white to pale gray circular spots',
+      'Spots have distinct dark borders',
+      'Affected tissue may fall out (shot-hole effect)',
+      'Yellowing around affected spots',
+    ],
+    treatments: [
+      {'title': 'Fungicide Spray', 'desc': 'Apply carbendazim or propiconazole fungicide spray'},
+      {'title': 'Neem Oil Treatment', 'desc': 'Spray neem oil 5ml/L as organic control method'},
+      {'title': 'Remove Affected Leaves', 'desc': 'Prune and burn infected leaves to stop spread'},
+      {'title': 'Reduce Leaf Wetness', 'desc': 'Avoid evening watering and improve air circulation'},
     ],
     accentColor: Color(0xFF7C3AED),
     lightColor: Color(0xFFF3E8FF),
@@ -313,16 +363,14 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                 top: 10,
                 child: Opacity(
                   opacity: 0.08,
-                  child: const Text("🌶️",
-                      style: TextStyle(fontSize: 180)),
+                  child: const Text("🌶️", style: TextStyle(fontSize: 180)),
                 ),
               ),
               Positioned(
                 left: 20,
                 bottom: 60,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -369,15 +417,12 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                 onTap: () => _switchDisease(d),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 250),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: selected ? d.accentColor : Colors.white,
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
-                      color: selected
-                          ? d.accentColor
-                          : const Color(0xFFE0E0E0),
+                      color: selected ? d.accentColor : const Color(0xFFE0E0E0),
                     ),
                     boxShadow: selected
                         ? [
@@ -390,7 +435,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                         : [],
                   ),
                   child: Text(
-                    "${d.emoji}  ${d.id == 'healthy' ? 'Healthy' : d.name.split(' ').skip(1).take(2).join(' ')}",
+                    "${d.emoji}  ${d.name}",
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
@@ -436,8 +481,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
-                  child: Text(d.emoji,
-                      style: const TextStyle(fontSize: 30)),
+                  child: Text(d.emoji, style: const TextStyle(fontSize: 30)),
                 ),
               ),
               const SizedBox(width: 14),
@@ -572,8 +616,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
           return Column(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
                     Text(icons[i % icons.length],
@@ -586,14 +629,12 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                             fontSize: 13.5, color: Color(0xFF333333)),
                       ),
                     ),
-                    Icon(Icons.check_circle,
-                        color: d.accentColor, size: 18),
+                    Icon(Icons.check_circle, color: d.accentColor, size: 18),
                   ],
                 ),
               ),
               if (i < d.symptoms.length - 1)
-                const Divider(
-                    height: 1, color: Color(0xFFF5F5F5), indent: 48),
+                const Divider(height: 1, color: Color(0xFFF5F5F5), indent: 48),
             ],
           );
         }).toList(),
