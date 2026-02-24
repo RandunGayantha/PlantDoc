@@ -1,4 +1,5 @@
 // ignore_for_file: deprecated_member_use
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 // ─── Data Model ───────────────────────────────────────────────────────────────
@@ -215,8 +216,9 @@ final List<ChilliDisease> chilliDiseases = [
 
 class DiagnosisResultScreen extends StatefulWidget {
   final ChilliDisease? disease;
+  final String? imagePath;
 
-  const DiagnosisResultScreen({super.key, this.disease});
+  const DiagnosisResultScreen({super.key, this.disease, this.imagePath});
 
   @override
   State<DiagnosisResultScreen> createState() => _DiagnosisResultScreenState();
@@ -275,6 +277,9 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Show scanned image if available
+                      if (widget.imagePath != null) _buildScannedImage(),
+                      if (widget.imagePath != null) const SizedBox(height: 20),
                       _buildDiseaseSelector(),
                       const SizedBox(height: 20),
                       _buildResultCard(d),
@@ -295,6 +300,53 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ── Scanned Image ─────────────────────────────────────────────────────────
+
+  Widget _buildScannedImage() {
+    return Container(
+      width: double.infinity,
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            Image.file(
+              File(widget.imagePath!),
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  '📸  Scanned Leaf',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -581,8 +633,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     );
   }
 
-  // ── Section Title ────────────────────────────────────────────────────────────
-
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -593,8 +643,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       ),
     );
   }
-
-  // ── Symptoms ─────────────────────────────────────────────────────────────────
 
   Widget _buildSymptomsList(ChilliDisease d) {
     final icons = ["🔍", "🧬", "📍", "⚠️"];
@@ -641,8 +689,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       ),
     );
   }
-
-  // ── Treatments ───────────────────────────────────────────────────────────────
 
   Widget _buildTreatmentList(ChilliDisease d) {
     return Column(
@@ -710,8 +756,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       }).toList(),
     );
   }
-
-  // ── Action Buttons ───────────────────────────────────────────────────────────
 
   Widget _buildActionButtons(ChilliDisease d) {
     return Column(
