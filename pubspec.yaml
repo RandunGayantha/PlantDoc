@@ -10,9 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  tflite_flutter: ^0.10.4
-  image_picker: ^1.0.4    # 👈 ADD THIS
-  image: ^4.1.3            # 👈 ADD THIS
+  tflite_flutter: ^0.12.1
+  image_picker: ^1.0.4    
+  image: ^4.1.3            
 
 dev_dependencies:
   flutter_test:

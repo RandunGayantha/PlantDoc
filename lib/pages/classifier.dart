@@ -71,9 +71,10 @@ class Classifier {
     for (int y = 0; y < inputSize; y++) {
       for (int x = 0; x < inputSize; x++) {
         var pixel = image.getPixel(x, y);
-        buffer[pixelIndex++] = img.getRed(pixel) / 255.0;
-        buffer[pixelIndex++] = img.getGreen(pixel) / 255.0;
-        buffer[pixelIndex++] = img.getBlue(pixel) / 255.0;
+        // ✅ Fixed: use pixel.r / .g / .b instead of deprecated img.getRed/getGreen/getBlue
+        buffer[pixelIndex++] = pixel.r / 255.0;
+        buffer[pixelIndex++] = pixel.g / 255.0;
+        buffer[pixelIndex++] = pixel.b / 255.0;
       }
     }
     return convertedBytes.buffer.asUint8List();
