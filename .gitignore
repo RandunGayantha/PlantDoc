@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Google Services - NEVER commit this file (contains API keys)
+google-services.json
+android/app/google-services.json

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:plantdoc/pages/camera.dart';
 import 'package:plantdoc/pages/fourm.dart';
 import 'package:plantdoc/pages/home.dart';
@@ -8,7 +7,6 @@ import 'package:plantdoc/pages/map.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   runApp(myApp());
 }
 

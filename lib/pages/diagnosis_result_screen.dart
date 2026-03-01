@@ -2,8 +2,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-// ─── Data Model ───────────────────────────────────────────────────────────────
-
 class ChilliDisease {
   final String id;
   final String name;
@@ -263,7 +261,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
   Widget build(BuildContext context) {
     final d = _selectedDisease;
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8F5),
+      backgroundColor: const Color(0xFFF0FFF4),
       body: CustomScrollView(
         slivers: [
           _buildAppBar(d),
@@ -277,7 +275,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Show scanned image if available
                       if (widget.imagePath != null) _buildScannedImage(),
                       if (widget.imagePath != null) const SizedBox(height: 20),
                       _buildDiseaseSelector(),
@@ -357,7 +354,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     return SliverAppBar(
       expandedHeight: 200,
       pinned: true,
-      backgroundColor: const Color(0xFF7C2D12),
+      backgroundColor: const Color(0xFF166534),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
@@ -403,7 +400,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
         background: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF7C2D12), Color(0xFFEA580C)],
+              colors: [Color(0xFF166534), Color(0xFF16A34A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -418,7 +415,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   child: const Text("🌶️", style: TextStyle(fontSize: 180)),
                 ),
               ),
-
             ],
           ),
         ),
@@ -541,7 +537,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                       spacing: 6,
                       children: [
                         _buildBadge(d.severity, d.severityColor),
-                        _buildBadge("🌶️ Chilli", const Color(0xFFEA580C)),
+                        _buildBadge("🌶️ Chilli", const Color(0xFF16A34A)),
                       ],
                     ),
                   ],
@@ -757,8 +753,30 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: d.accentColor,
-              side: BorderSide(color: d.accentColor, width: 1.5),
+              foregroundColor: const Color(0xFF166534),
+              side: const BorderSide(color: Color(0xFF166534), width: 1.5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              // TODO: Member 6 will connect this to Community Forum
+            },
+            icon: const Icon(Icons.people_outline, size: 20),
+            label: const Text(
+              "Get Advice from Expert",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF166534),
+              foregroundColor: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
             ),

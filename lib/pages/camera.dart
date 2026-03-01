@@ -2,7 +2,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'classifier.dart';
 import 'diagnosis_result_screen.dart';
 
@@ -29,20 +28,6 @@ class _CameraState extends State<Camera> {
   void dispose() {
     _classifier.dispose();
     super.dispose();
-  }
-
-  // Save scan result to Firebase in background
-  Future<void> _saveScanResult(String label, double confidence) async {
-    try {
-      await FirebaseFirestore.instance.collection('scans').add({
-        'disease': label,
-        'confidence': confidence,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      print('✅ Firebase save successful!');
-    } catch (e) {
-      print('❌ Firebase error: $e');
-    }
   }
 
   // Pick image from camera
@@ -79,9 +64,6 @@ class _CameraState extends State<Camera> {
       final String label = result['label'] ?? 'Unknown';
       final double confidence = result['confidence'] ?? 0.0;
       print('✅ AI done: $label ($confidence)');
-
-      // Save to Firebase in background - no await so it doesn't block result
-      _saveScanResult(label, confidence);
       print('📱 Navigating to result...');
 
       // Match label to disease
@@ -113,7 +95,6 @@ class _CameraState extends State<Camera> {
 
     ChilliDisease matched = chilliDiseases[0]; // default healthy
 
-    // ✅ FIXED: correct bracket logic for bacterial spot
     if (lowerLabel.contains('bacterial_spot') ||
         (lowerLabel.contains('spot') && lowerLabel.contains('bacterial'))) {
       matched = chilliDiseases.firstWhere(
@@ -165,9 +146,9 @@ class _CameraState extends State<Camera> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8F5),
+      backgroundColor: const Color(0xFFF0FFF4),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF7C2D12),
+        backgroundColor: const Color(0xFF166534),
         title: const Text(
           '🌶️  Scan Leaf',
           style: TextStyle(
@@ -208,7 +189,7 @@ class _CameraState extends State<Camera> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: _selectedImage != null
-                        ? const Color(0xFF7C2D12)
+                        ? const Color(0xFF166534)
                         : const Color(0xFFE0E0E0),
                     width: 2,
                   ),
@@ -234,11 +215,11 @@ class _CameraState extends State<Camera> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF3C7),
+                              color: const Color(0xFFDCFCE7),
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: const Text(
-                              '🌿',
+                              '🌶️',
                               style: TextStyle(fontSize: 40),
                             ),
                           ),
@@ -272,7 +253,7 @@ class _CameraState extends State<Camera> {
                   child: _buildOptionButton(
                     icon: Icons.camera_alt_outlined,
                     label: 'Camera',
-                    color: const Color(0xFF7C2D12),
+                    color: const Color(0xFF166534),
                     onTap: _pickFromCamera,
                   ),
                 ),
@@ -281,7 +262,7 @@ class _CameraState extends State<Camera> {
                   child: _buildOptionButton(
                     icon: Icons.photo_library_outlined,
                     label: 'Gallery',
-                    color: const Color(0xFF059669),
+                    color: const Color(0xFF16A34A),
                     onTap: _pickFromGallery,
                   ),
                 ),
@@ -293,7 +274,7 @@ class _CameraState extends State<Camera> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF3C7),
+                color: const Color(0xFFDCFCE7),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Column(
@@ -304,18 +285,18 @@ class _CameraState extends State<Camera> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
-                      color: Color(0xFF92400E),
+                      color: Color(0xFF166534),
                     ),
                   ),
                   SizedBox(height: 8),
                   Text('• Take photo in good lighting',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF78350F))),
+                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
                   Text('• Focus on a single leaf clearly',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF78350F))),
+                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
                   Text('• Avoid blurry or dark images',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF78350F))),
+                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
                   Text('• Include both sides of leaf if possible',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF78350F))),
+                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
                 ],
               ),
             ),
@@ -329,7 +310,7 @@ class _CameraState extends State<Camera> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _analyzeImage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7C2D12),
+                    backgroundColor: const Color(0xFF166534),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

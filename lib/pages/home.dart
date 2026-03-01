@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:plantdoc/pages/camera.dart';
 
@@ -12,9 +13,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8F5),
+      backgroundColor: const Color(0xFFF0FFF4),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF7C2D12),
+        backgroundColor: const Color(0xFF166534),
         title: const Text(
           '🌶️  PlantDoc',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
@@ -52,14 +53,14 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF7C2D12), Color(0xFFB91C1C)],
+                    colors: [Color(0xFF166534), Color(0xFF16A34A)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF7C2D12).withOpacity(0.35),
+                      color: const Color(0xFF166534).withOpacity(0.35),
                       blurRadius: 18,
                       offset: const Offset(0, 6),
                     ),
@@ -71,7 +72,6 @@ class _HomeState extends State<Home> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
                           const Text(
                             'Scan Chilli Leaf',
                             style: TextStyle(
@@ -101,12 +101,12 @@ class _HomeState extends State<Home> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.camera_alt,
-                                    color: Color(0xFF7C2D12), size: 18),
+                                    color: Color(0xFF166534), size: 18),
                                 SizedBox(width: 6),
                                 Text(
                                   'Open Scanner',
                                   style: TextStyle(
-                                    color: Color(0xFF7C2D12),
+                                    color: Color(0xFF166634),
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
                                   ),
