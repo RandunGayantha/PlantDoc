@@ -131,6 +131,7 @@ class _CameraState extends State<Camera> {
       id: matched.id,
       name: matched.name,
       emoji: matched.emoji,
+      imagePath: matched.imagePath,
       confidence: '${(confidence * 100).toStringAsFixed(1)}%',
       confidenceValue: confidence,
       severity: matched.severity,
@@ -148,23 +149,36 @@ class _CameraState extends State<Camera> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0FFF4),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF166534),
-        title: const Text(
-          '🌶️  Scan Leaf',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
+        backgroundColor: const Color(0xFFB7FFBA),
+        // Plant background image with white overlay
+        flexibleSpace: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/images/plant_bg.jpg',
+              fit: BoxFit.cover,
+            ),
+            Container(
+              color: const Color(0xAAFFFFFF), // white overlay to lighten photo
+            ),
+          ],
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        // Logo in AppBar
+        title: Image.asset(
+          'assets/images/plantdoc_logo.png',
+          height: 120, // ← CHANGE THIS NUMBER to resize logo
+          fit: BoxFit.contain,
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF166534)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Title
             const Text(
-              'Chilli Leaf Scanner',
+              'Leaf Scanner',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
@@ -173,7 +187,7 @@ class _CameraState extends State<Camera> {
             ),
             const SizedBox(height: 6),
             const Text(
-              'Take or upload a photo of a chilli leaf to detect disease',
+              'Take or upload a photo of a leaf to detect disease',
               style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
             ),
             const SizedBox(height: 24),
@@ -218,9 +232,11 @@ class _CameraState extends State<Camera> {
                               color: const Color(0xFFDCFCE7),
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            child: const Text(
-                              '🌶️',
-                              style: TextStyle(fontSize: 40),
+                            // No chilli icon — using camera icon instead
+                            child: const Icon(
+                              Icons.camera_alt_outlined,
+                              size: 40,
+                              color: Color(0xFF166534),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -246,14 +262,13 @@ class _CameraState extends State<Camera> {
             ),
             const SizedBox(height: 20),
 
-            // Camera and Gallery buttons
+            // Camera and Gallery buttons — glass effect
             Row(
               children: [
                 Expanded(
                   child: _buildOptionButton(
                     icon: Icons.camera_alt_outlined,
                     label: 'Camera',
-                    color: const Color(0xFF166534),
                     onTap: _pickFromCamera,
                   ),
                 ),
@@ -262,7 +277,6 @@ class _CameraState extends State<Camera> {
                   child: _buildOptionButton(
                     icon: Icons.photo_library_outlined,
                     label: 'Gallery',
-                    color: const Color(0xFF16A34A),
                     onTap: _pickFromGallery,
                   ),
                 ),
@@ -361,10 +375,10 @@ class _CameraState extends State<Camera> {
     );
   }
 
+  // Glass effect button for Camera and Gallery
   Widget _buildOptionButton({
     required IconData icon,
     required String label,
-    required Color color,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -372,19 +386,29 @@ class _CameraState extends State<Camera> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: Colors.white.withOpacity(0.35),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(
+            color: const Color(0xFF166534).withOpacity(0.5),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF166534).withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 22),
+            Icon(icon, color: const Color(0xFF166534), size: 22),
             const SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(
-                color: color,
+              style: const TextStyle(
+                color: Color(0xFF166534),
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
               ),

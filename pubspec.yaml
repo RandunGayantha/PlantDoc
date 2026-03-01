@@ -24,3 +24,12 @@ flutter:
   assets:
     - assets/models/diseaseDetection.tflite
     - assets/models/labels.txt
+    - assets/images/plantdoc_logo.png
+    - assets/images/plant_bg.jpg
+    - assets/images/healthy.jpg
+    - assets/images/bacterial.JPG
+    - assets/images/cercospora.JPG
+    - assets/images/anthracnose.jpg
+    - assets/images/curl_virus.JPG
+    - assets/images/nutrition.JPG
+    - assets/images/white_spot.JPG

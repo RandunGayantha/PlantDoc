@@ -6,6 +6,7 @@ class ChilliDisease {
   final String id;
   final String name;
   final String emoji;
+  final String imagePath;
   final String confidence;
   final double confidenceValue;
   final String severity;
@@ -20,6 +21,7 @@ class ChilliDisease {
     required this.id,
     required this.name,
     required this.emoji,
+    required this.imagePath,
     required this.confidence,
     required this.confidenceValue,
     required this.severity,
@@ -37,6 +39,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'healthy',
     name: 'Healthy Leaf',
     emoji: '🌿',
+    imagePath: 'assets/images/healthy.jpg',
     confidence: '98.2%',
     confidenceValue: 0.982,
     severity: 'Healthy',
@@ -62,6 +65,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'bacterial_spot',
     name: 'Bacterial Spot',
     emoji: '🔴',
+    imagePath: 'assets/images/bacterial.JPG',
     confidence: '90.3%',
     confidenceValue: 0.903,
     severity: 'Severe',
@@ -87,6 +91,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'cercospora',
     name: 'Cercospora Leaf Spot',
     emoji: '🍂',
+    imagePath: 'assets/images/cercospora.JPG',
     confidence: '88.6%',
     confidenceValue: 0.886,
     severity: 'Moderate',
@@ -112,6 +117,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'anthracnose',
     name: 'Chilli Anthracnose',
     emoji: '🍁',
+    imagePath: 'assets/images/anthracnose.jpg',
     confidence: '93.1%',
     confidenceValue: 0.931,
     severity: 'Severe',
@@ -137,6 +143,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'curl_virus',
     name: 'Curl Virus',
     emoji: '🦠',
+    imagePath: 'assets/images/curl_virus.JPG',
     confidence: '91.4%',
     confidenceValue: 0.914,
     severity: 'Severe',
@@ -162,6 +169,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'nutrition_deficiency',
     name: 'Nutrition Deficiency',
     emoji: '🌱',
+    imagePath: 'assets/images/nutrition.JPG',
     confidence: '87.5%',
     confidenceValue: 0.875,
     severity: 'Mild',
@@ -187,6 +195,7 @@ final List<ChilliDisease> chilliDiseases = [
     id: 'white_spot',
     name: 'White Spot',
     emoji: '⚪',
+    imagePath: 'assets/images/white_spot.JPG',
     confidence: '89.2%',
     confidenceValue: 0.892,
     severity: 'Moderate',
@@ -229,6 +238,9 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
   late Animation<Offset> _slideUp;
   late ChilliDisease _selectedDisease;
   bool _saved = false;
+  String _temperature = '--';
+  String _weatherDesc = '--';
+  bool _weatherLoaded = false;
 
   @override
   void initState() {
@@ -244,12 +256,25 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
+    _loadWeather();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadWeather() async {
+    // Simulated weather - Member 2 can connect real Weather API here
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      setState(() {
+        _temperature = '32°C';
+        _weatherDesc = '☀️ Sunny';
+        _weatherLoaded = true;
+      });
+    }
   }
 
   void _switchDisease(ChilliDisease d) {
@@ -352,22 +377,53 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
 
   Widget _buildAppBar(ChilliDisease d) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 220,
       pinned: true,
-      backgroundColor: const Color(0xFF166534),
+      backgroundColor: const Color(0xFFB7FFBA),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+        icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF166534), size: 20),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
+        // Weather display in AppBar - bigger and more visible
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.75),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFF166534).withOpacity(0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.thermostat, color: Color(0xFF166534), size: 20),
+              const SizedBox(width: 6),
+              Text(
+                _weatherLoaded ? '$_temperature  $_weatherDesc' : 'Loading...',
+                style: const TextStyle(
+                  color: Color(0xFF166534),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
         IconButton(
-          icon: const Icon(Icons.share_outlined, color: Colors.white),
+          icon: const Icon(Icons.share_outlined, color: Color(0xFF166534)),
           onPressed: () {},
         ),
         IconButton(
           icon: Icon(
             _saved ? Icons.bookmark : Icons.bookmark_border,
-            color: Colors.white,
+            color: const Color(0xFF166534),
           ),
           onPressed: () => setState(() => _saved = !_saved),
         ),
@@ -378,45 +434,32 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Diagnosis Result",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 17,
-                letterSpacing: 0.2,
-              ),
+            Image.asset(
+              'assets/images/plantdoc_logo.png',
+              height: 120, // ← CHANGE THIS NUMBER to resize logo
+              fit: BoxFit.contain,
             ),
             Text(
-              "🌶️  Chilli Plant Analysis",
+              "Plant Analysis",
               style: TextStyle(
-                color: Colors.white.withOpacity(0.75),
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
+                color: const Color(0xFF166534).withOpacity(0.9),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
         ),
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF166534), Color(0xFF16A34A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/images/plant_bg.jpg',
+              fit: BoxFit.cover,
             ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -20,
-                top: 10,
-                child: Opacity(
-                  opacity: 0.08,
-                  child: const Text("🌶️", style: TextStyle(fontSize: 180)),
-                ),
-              ),
-            ],
-          ),
+            Container(
+              color: const Color(0xAAFFFFFF), // white overlay to lighten photo
+            ),
+          ],
         ),
       ),
     );
@@ -451,30 +494,50 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                 onTap: () => _switchDisease(d),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 250),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: selected ? d.accentColor : Colors.white,
+                    color: selected
+                        ? d.accentColor.withOpacity(0.85)
+                        : Colors.white.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
-                      color: selected ? d.accentColor : const Color(0xFFE0E0E0),
+                      color: selected
+                          ? d.accentColor
+                          : const Color(0xFF166534).withOpacity(0.4),
+                      width: 1.5,
                     ),
-                    boxShadow: selected
-                        ? [
-                            BoxShadow(
-                              color: d.accentColor.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            )
-                          ]
-                        : [],
+                    boxShadow: [
+                      BoxShadow(
+                        color: selected
+                            ? d.accentColor.withOpacity(0.3)
+                            : const Color(0xFF166534).withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      )
+                    ],
                   ),
-                  child: Text(
-                    "${d.emoji}  ${d.name}",
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: selected ? Colors.white : const Color(0xFF444444),
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          d.imagePath,
+                          width: 26,
+                          height: 26,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        d.name,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: selected ? Colors.white : const Color(0xFF166534),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -492,11 +555,15 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.6),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFF166534).withOpacity(0.4),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: const Color(0xFF166534).withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           )
@@ -511,11 +578,20 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: d.lightColor,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF166534).withOpacity(0.3),
+                    width: 1.5,
+                  ),
                 ),
-                child: Center(
-                  child: Text(d.emoji, style: const TextStyle(fontSize: 30)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset(
+                    d.imagePath,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 14),
@@ -630,11 +706,15 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
     final icons = ["🔍", "🧬", "📍", "⚠️"];
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.6),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF166534).withOpacity(0.4),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: const Color(0xFF166534).withOpacity(0.08),
             blurRadius: 10,
             offset: const Offset(0, 2),
           )
@@ -681,11 +761,15 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.6),
             borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: const Color(0xFF166534).withOpacity(0.4),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: const Color(0xFF166534).withOpacity(0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               )

@@ -15,10 +15,23 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0FFF4),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF166534),
-        title: const Text(
-          '🌶️  PlantDoc',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+        backgroundColor: const Color(0xFFB7FFBA),
+        flexibleSpace: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/images/plant_bg.jpg',
+              fit: BoxFit.cover,
+            ),
+            Container(
+              color: const Color(0xAAFFFFFF), // white overlay to lighten photo
+            ),
+          ],
+        ),
+        title: Image.asset(
+          'assets/images/plantdoc_logo.png',
+          height: 120, // ← CHANGE THIS NUMBER to resize logo
+          fit: BoxFit.contain,
         ),
       ),
       body: SingleChildScrollView(
@@ -52,73 +65,84 @@ class _HomeState extends State<Home> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF166534), Color(0xFF16A34A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF166534).withOpacity(0.35),
+                      color: const Color(0xFF22C55E).withOpacity(0.4),
                       blurRadius: 18,
                       offset: const Offset(0, 6),
                     ),
                   ],
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/plant_bg.jpg'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Color(0x4422C55E), // green overlay on image
+                      BlendMode.srcOver,
+                    ),
+                  ),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    const Text(
+                      'Scan the Leaf',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        shadows: [
+                          Shadow(
+                            color: Color(0x88000000),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Take a photo and get\nan instant diagnosis',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        height: 1.4,
+                        shadows: [
+                          Shadow(
+                            color: Color(0x88000000),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.35),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.6),
+                          width: 1.2,
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'Scan Chilli Leaf',
+                          Icon(Icons.camera_alt,
+                              color: Colors.white, size: 18),
+                          SizedBox(width: 6),
+                          Text(
+                            'Open Scanner',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'Take a photo and get\nan instant diagnosis',
-                            style: TextStyle(
-                              color: Colors.white70,
+                              fontWeight: FontWeight.w700,
                               fontSize: 13,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 9),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.camera_alt,
-                                    color: Color(0xFF166534), size: 18),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Open Scanner',
-                                  style: TextStyle(
-                                    color: Color(0xFF166634),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    const Text('🌶️', style: TextStyle(fontSize: 72)),
                   ],
                 ),
               ),
