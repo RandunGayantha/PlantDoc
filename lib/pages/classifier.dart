@@ -43,6 +43,13 @@ class Classifier {
       var output = List.filled(1 * _labels.length, 0.0).reshape([1, _labels.length]);
       _interpreter!.run(input, output);
       List<double> scores = List<double>.from(output[0]);
+
+      // ✅ DEBUG: Print all scores to see what AI is predicting
+      print('🏷️ ALL SCORES:');
+      scores.asMap().forEach((i, score) {
+        print('  ${_labels[i]}: ${(score * 100).toStringAsFixed(1)}%');
+      });
+
       double maxScore = 0.0;
       int maxIndex = 0;
       for (int i = 0; i < scores.length; i++) {
@@ -71,7 +78,6 @@ class Classifier {
     for (int y = 0; y < inputSize; y++) {
       for (int x = 0; x < inputSize; x++) {
         var pixel = image.getPixel(x, y);
-        // ✅ Fixed: use pixel.r / .g / .b instead of deprecated img.getRed/getGreen/getBlue
         buffer[pixelIndex++] = pixel.r / 255.0;
         buffer[pixelIndex++] = pixel.g / 255.0;
         buffer[pixelIndex++] = pixel.b / 255.0;

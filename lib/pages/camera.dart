@@ -2,9 +2,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'classifier.dart';
 import 'diagnosis_result_screen.dart';
-// Android TFLite version
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -29,6 +29,20 @@ class _CameraState extends State<Camera> {
   void dispose() {
     _classifier.dispose();
     super.dispose();
+  }
+
+  // Save scan result to Firebase in background
+  Future<void> _saveScanResult(String label, double confidence) async {
+    try {
+      await FirebaseFirestore.instance.collection('scans').add({
+        'disease': label,
+        'confidence': confidence,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      print('✅ Firebase save successful!');
+    } catch (e) {
+      print('❌ Firebase error: $e');
+    }
   }
 
   // Pick image from camera
@@ -60,12 +74,18 @@ class _CameraState extends State<Camera> {
     setState(() => _isLoading = true);
 
     try {
+      print('🔍 Starting analysis...');
       final result = await _classifier.predict(_selectedImage!);
       final String label = result['label'] ?? 'Unknown';
       final double confidence = result['confidence'] ?? 0.0;
+      print('✅ AI done: $label ($confidence)');
+
+      // Save to Firebase in background - no await so it doesn't block result
+      _saveScanResult(label, confidence);
+      print('📱 Navigating to result...');
 
       // Match label to disease
-      ChilliDisease? matchedDisease = _matchDisease(label, confidence);
+      ChilliDisease matchedDisease = _matchDisease(label, confidence);
 
       if (mounted) {
         setState(() => _isLoading = false);
@@ -93,23 +113,39 @@ class _CameraState extends State<Camera> {
 
     ChilliDisease matched = chilliDiseases[0]; // default healthy
 
-    if (lowerLabel.contains('bacterial') || lowerLabel.contains('spot') && lowerLabel.contains('bacterial')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'bacterial_spot', orElse: () => chilliDiseases[0]);
+    // ✅ FIXED: correct bracket logic for bacterial spot
+    if (lowerLabel.contains('bacterial_spot') ||
+        (lowerLabel.contains('spot') && lowerLabel.contains('bacterial'))) {
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'bacterial_spot',
+          orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('cercospora')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'cercospora', orElse: () => chilliDiseases[0]);
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'cercospora',
+          orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('anthracnose')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'anthracnose', orElse: () => chilliDiseases[0]);
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'anthracnose',
+          orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('curl') || lowerLabel.contains('virus')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'curl_virus', orElse: () => chilliDiseases[0]);
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'curl_virus',
+          orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('healthy')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'healthy', orElse: () => chilliDiseases[0]);
-    } else if (lowerLabel.contains('nutrition') || lowerLabel.contains('deficiency')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'nutrition_deficiency', orElse: () => chilliDiseases[0]);
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'healthy',
+          orElse: () => chilliDiseases[0]);
+    } else if (lowerLabel.contains('nutrition') ||
+        lowerLabel.contains('deficiency')) {
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'nutrition_deficiency',
+          orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('white')) {
-      matched = chilliDiseases.firstWhere((d) => d.id == 'white_spot', orElse: () => chilliDiseases[0]);
+      matched = chilliDiseases.firstWhere(
+          (d) => d.id == 'white_spot',
+          orElse: () => chilliDiseases[0]);
     }
 
-    // Override confidence with actual model confidence
     return ChilliDisease(
       id: matched.id,
       name: matched.name,
@@ -146,7 +182,6 @@ class _CameraState extends State<Camera> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
             const Text(
               'Chilli Leaf Scanner',
               style: TextStyle(

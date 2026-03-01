@@ -418,21 +418,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
                   child: const Text("🌶️", style: TextStyle(fontSize: 180)),
                 ),
               ),
-              Positioned(
-                left: 20,
-                bottom: 60,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    "🤖  AI-Powered Plant Doctor",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),
@@ -760,26 +746,6 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
   Widget _buildActionButtons(ChilliDisease d) {
     return Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.agriculture_outlined, size: 20),
-            label: const Text(
-              "Get Expert Advice",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: d.accentColor,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
-              elevation: 0,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
         SizedBox(
           width: double.infinity,
           height: 52,
