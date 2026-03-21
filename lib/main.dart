@@ -4,8 +4,21 @@ import 'dart:async';
 import 'package:plantdoc/pages/camera.dart';
 import 'package:plantdoc/pages/fourm.dart';
 import 'package:plantdoc/pages/home.dart';
-import 'package:plantdoc/pages/profile.dart';
 import 'package:plantdoc/pages/map.dart';
+import 'package:plantdoc/pages/profile.dart';
+ Kavinash/Location-Page
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
 
 vimansa/Diagnosis-Result-Screen
 void main() async {
@@ -34,14 +47,19 @@ class MyApp extends StatelessWidget {
 vimansa/Diagnosis-Result-Screen
 class _myAppState extends State<myApp> {
 
+ main
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
     Home(),
-    Map(),
+    GoogleMapsScreen(),
     Camera(),
     fourm(),
+ Kavinash/Location-Page
+    Profile(),
+
     Profile()
+ main
   ];
 
   @override
@@ -59,10 +77,17 @@ class _myAppState extends State<myApp> {
               _currentIndex = index;
             });
           },
+Kavinash/Location-Page
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Dashboard",
+
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: "Dashbord",
+ main
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.map),
@@ -81,6 +106,10 @@ class _myAppState extends State<myApp> {
               label: "Profile",
             ),
           ],
+ Kavinash/Location-Page
+        ),
+        body: _pages[_currentIndex],
+
         ),
         body: _pages[_currentIndex],
 
@@ -162,6 +191,7 @@ class _NavigationPageState extends State<NavigationPage> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
 main
+ main
       ),
     );
   }
