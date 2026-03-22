@@ -5,114 +5,30 @@ import 'package:plantdoc/pages/camera.dart';
 import 'package:plantdoc/pages/fourm.dart';
 import 'package:plantdoc/pages/home.dart';
 import 'package:plantdoc/pages/map.dart';
+import 'package:plantdoc/pages/splash_screen.dart';
 import 'package:plantdoc/pages/profile.dart';
- Kavinash/Location-Page
-void main() {
-  runApp(const MyApp());
-}
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-
-vimansa/Diagnosis-Result-Screen
+// 1. We keep the async main function with initialized bindings for camera/maps
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(myApp());
-
-void main() {
   runApp(const MyApp());
- main
 }
 
-
+// 2. A clean, single MyApp widget that routes to the SplashScreen
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Plant Doc",
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }
 
-vimansa/Diagnosis-Result-Screen
-class _myAppState extends State<myApp> {
-
- main
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    Home(),
-    GoogleMapsScreen(),
-    Camera(),
-    fourm(),
- Kavinash/Location-Page
-    Profile(),
-
-    Profile()
- main
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Plant Doc",
-      home: Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.grey,
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-Kavinash/Location-Page
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Dashboard",
-
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Dashbord",
- main
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: "Map",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.camera),
-              label: "Camera",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.forum),
-              label: "Forum",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.man_2),
-              label: "Profile",
-            ),
-          ],
- Kavinash/Location-Page
-        ),
-        body: _pages[_currentIndex],
-
-        ),
-        body: _pages[_currentIndex],
-
+// 3. Your Splash Screen logic
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -150,6 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
+// 4. Your clean Navigation Page with the BottomNavigationBar
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
 
@@ -160,21 +77,22 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   int _currentIndex = 0;
 
+  // I removed the "const" keyword from these pages just in case your 
+  // other dart files don't have const constructors yet.
   final List<Widget> _pages = [
-    const Home(),
-    const Map(),
-    const Camera(),
-    const fourm(),
-    const Profile(),
+    Home(),
+    GoogleMapsScreen(), // Make sure your map class is actually named Map() inside map.dart!
+    Camera(),
+    fourm(),
+    Profile(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
+        type: BottomNavigationBarType.fixed, // Crucial when you have more than 3 items!
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
@@ -190,8 +108,6 @@ class _NavigationPageState extends State<NavigationPage> {
           BottomNavigationBarItem(icon: Icon(Icons.forum), label: "Forum"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
-main
- main
       ),
     );
   }

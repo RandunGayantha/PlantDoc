@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'classifier.dart';
 import 'diagnosis_result_screen.dart';
+import 'constants.dart';
 
 class Camera extends StatefulWidget {
   const Camera({super.key});

@@ -1,10 +1,7 @@
 name: plantdoc
 description: "A new Flutter project."
 publish_to: 'none'
- vimansa/Diagnosis-Result-Screen
 
-
-main
 version: 1.0.0+1
 
 environment:
@@ -15,12 +12,6 @@ dependencies:
     sdk: flutter
 
   google_maps_flutter: ^2.14.2
-
-  cupertino_icons: ^1.0.8
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  
   cupertino_icons: ^1.0.8
   tflite_flutter: ^0.12.1
   image_picker: ^1.0.4    
@@ -33,8 +24,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-vimansa/Diagnosis-Result-Screen
+  
   assets:
+    - assets/logo.png
     - assets/models/diseaseDetection.tflite
     - assets/models/labels.txt
     - assets/images/plantdoc_logo.png
@@ -47,13 +39,8 @@ vimansa/Diagnosis-Result-Screen
     - assets/images/nutrition.JPG
     - assets/images/white_spot.JPG
 
-
-  assets:
-    - assets/logo.png
-
 flutter_native_splash:
   color: "#00a651"
   image: assets/logo.png
   android: true
   ios: true
- main
