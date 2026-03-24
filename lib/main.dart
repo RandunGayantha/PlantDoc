@@ -5,7 +5,6 @@ import 'package:plantdoc/pages/camera.dart';
 import 'package:plantdoc/pages/fourm.dart';
 import 'package:plantdoc/pages/home.dart';
 import 'package:plantdoc/pages/map.dart';
-import 'package:plantdoc/pages/splash_screen.dart';
 import 'package:plantdoc/pages/profile.dart';
 
 // 1. We keep the async main function with initialized bindings for camera/maps
