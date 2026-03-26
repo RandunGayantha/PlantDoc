@@ -1,6 +1,10 @@
 name: plantdoc
 description: "A new Flutter project."
 publish_to: 'none'
+ vimansa/Diagnosis-Result-Screen
+
+
+main
 version: 1.0.0+1
 
 environment:
@@ -22,6 +26,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+vimansa/Diagnosis-Result-Screen
   assets:
     - assets/models/diseaseDetection.tflite
     - assets/models/labels.txt
@@ -34,3 +39,14 @@ flutter:
     - assets/images/curl_virus.JPG
     - assets/images/nutrition.JPG
     - assets/images/white_spot.JPG
+
+
+  assets:
+    - assets/logo.png
+
+flutter_native_splash:
+  color: "#00a651"
+  image: assets/logo.png
+  android: true
+  ios: true
+ main
