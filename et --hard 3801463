@@ -1,0 +1,16 @@
+[33mdec21c0[m[33m ([m[1;36mHEAD[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m3801463[m HEAD@{1}: checkout: moving from vimansa/Diagnosis-Result-Screen to HEAD~1
+[33m107af8c[m[33m ([m[1;31morigin/vimansa/Diagnosis-Result-Screen[m[33m, [m[1;32mvimansa/Diagnosis-Result-Screen[m[33m)[m HEAD@{2}: reset: moving to HEAD
+[33m107af8c[m[33m ([m[1;31morigin/vimansa/Diagnosis-Result-Screen[m[33m, [m[1;32mvimansa/Diagnosis-Result-Screen[m[33m)[m HEAD@{3}: commit: UI changes
+[33m3801463[m HEAD@{4}: commit: green theme redesign with glass effect and plant background
+[33mdec21c0[m[33m ([m[1;36mHEAD[m[33m)[m HEAD@{5}: commit: remove firebase
+[33m09e265b[m HEAD@{6}: commit: Remove google-services.json and add to gitignore
+[33m0d84142[m HEAD@{7}: commit: Implement AI-powered chilli disease detection with Firebase integration
+[33me9faae0[m HEAD@{8}: commit: updated home and classifier pages with dependency changes
+[33m936aa83[m HEAD@{9}: commit: Integrate TensorFlow Lite model for plant disease diagnosis
+[33mf6d403c[m HEAD@{10}: commit: Add plant disease labels to labels.txt for model training
+[33m68a469e[m HEAD@{11}: commit: Refactor DiagnosisResultScreen to integrate ChilliDisease data model and enhance UI components
+[33m43dd487[m[33m ([m[1;31morigin/vimansa2[m[33m, [m[1;32mvimansa2[m[33m)[m HEAD@{12}: checkout: moving from vimansa2 to vimansa/Diagnosis-Result-Screen
+[33m43dd487[m[33m ([m[1;31morigin/vimansa2[m[33m, [m[1;32mvimansa2[m[33m)[m HEAD@{13}: commit: Add DiagnosisResultScreen and update Home page with navigation
+[33m6e5327c[m[33m ([m[1;32mmain[m[33m)[m HEAD@{14}: checkout: moving from main to vimansa2
+[33m6e5327c[m[33m ([m[1;32mmain[m[33m)[m HEAD@{15}: clone: from https://github.com/RandunGayantha/PlantDoc.git
