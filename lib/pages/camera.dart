@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'classifier.dart';
 import 'diagnosis_result_screen.dart';
@@ -12,63 +13,101 @@ class Camera extends StatefulWidget {
   State<Camera> createState() => _CameraState();
 }
 
-class _CameraState extends State<Camera> {
-  File? _selectedImage;
+class _CameraState extends State<Camera> with WidgetsBindingObserver {
+  CameraController? _cameraController;
+  List<CameraDescription> _cameras = [];
+  bool _isCameraReady = false;
   bool _isLoading = false;
+  bool _isTakingPhoto = false;
+  File? _capturedImage;
+
   final Classifier _classifier = Classifier();
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _classifier.loadModel();
+    _initCamera();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
     _classifier.dispose();
     super.dispose();
   }
 
-  // Pick image from camera
-  Future<void> _pickFromCamera() async {
-    final XFile? photo = await _picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 90,
-    );
-    if (photo != null) {
-      setState(() => _selectedImage = File(photo.path));
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (state == AppLifecycleState.inactive) {
+      _cameraController?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      _initCamera();
     }
   }
 
-  // Pick image from gallery
+  Future<void> _initCamera() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras.isEmpty) return;
+
+      final backCamera = _cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.back,
+        orElse: () => _cameras.first,
+      );
+
+      _cameraController = CameraController(
+        backCamera,
+        ResolutionPreset.high,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+
+      await _cameraController!.initialize();
+      if (mounted) setState(() => _isCameraReady = true);
+    } catch (e) {
+      debugPrint('Camera init error: $e');
+    }
+  }
+
+  Future<void> _takePhoto() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
+    if (_isTakingPhoto) return;
+    setState(() => _isTakingPhoto = true);
+    try {
+      final XFile file = await _cameraController!.takePicture();
+      setState(() {
+        _capturedImage = File(file.path);
+        _isTakingPhoto = false;
+      });
+    } catch (e) {
+      setState(() => _isTakingPhoto = false);
+      debugPrint('Take photo error: $e');
+    }
+  }
+
   Future<void> _pickFromGallery() async {
     final XFile? photo = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 90,
     );
-    if (photo != null) {
-      setState(() => _selectedImage = File(photo.path));
-    }
+    if (photo != null) setState(() => _capturedImage = File(photo.path));
   }
 
-  // Run prediction and navigate to result
+  void _retake() => setState(() => _capturedImage = null);
+
   Future<void> _analyzeImage() async {
-    if (_selectedImage == null) return;
-
+    if (_capturedImage == null) return;
     setState(() => _isLoading = true);
-
     try {
-      print('🔍 Starting analysis...');
-      final result = await _classifier.predict(_selectedImage!);
+      final result = await _classifier.predict(_capturedImage!);
       final String label = result['label'] ?? 'Unknown';
       final double confidence = result['confidence'] ?? 0.0;
-      print('✅ AI done: $label ($confidence)');
-      print('📱 Navigating to result...');
-
-      // Match label to disease
       ChilliDisease matchedDisease = _matchDisease(label, confidence);
-
       if (mounted) {
         setState(() => _isLoading = false);
         Navigator.push(
@@ -76,7 +115,7 @@ class _CameraState extends State<Camera> {
           MaterialPageRoute(
             builder: (context) => DiagnosisResultScreen(
               disease: matchedDisease,
-              imagePath: _selectedImage!.path,
+              imagePath: _capturedImage!.path,
             ),
           ),
         );
@@ -89,44 +128,33 @@ class _CameraState extends State<Camera> {
     }
   }
 
-  // Match predicted label to ChilliDisease object
   ChilliDisease _matchDisease(String label, double confidence) {
     String lowerLabel = label.toLowerCase();
-
-    ChilliDisease matched = chilliDiseases[0]; // default healthy
-
+    ChilliDisease matched = chilliDiseases[0];
     if (lowerLabel.contains('bacterial_spot') ||
         (lowerLabel.contains('spot') && lowerLabel.contains('bacterial'))) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'bacterial_spot',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'bacterial_spot', orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('cercospora')) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'cercospora',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'cercospora', orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('anthracnose')) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'anthracnose',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'anthracnose', orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('curl') || lowerLabel.contains('virus')) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'curl_virus',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'curl_virus', orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('healthy')) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'healthy',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'healthy', orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('nutrition') ||
         lowerLabel.contains('deficiency')) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'nutrition_deficiency',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'nutrition_deficiency', orElse: () => chilliDiseases[0]);
     } else if (lowerLabel.contains('white')) {
       matched = chilliDiseases.firstWhere(
-          (d) => d.id == 'white_spot',
-          orElse: () => chilliDiseases[0]);
+          (d) => d.id == 'white_spot', orElse: () => chilliDiseases[0]);
     }
-
     return ChilliDisease(
       id: matched.id,
       name: matched.name,
@@ -146,276 +174,377 @@ class _CameraState extends State<Camera> {
 
   @override
   Widget build(BuildContext context) {
+    return _capturedImage != null ? _buildPreviewScreen() : _buildCameraScreen();
+  }
+
+  // ─── LIVE VIEWFINDER ─────────────────────────────────────────────────────
+  Widget _buildCameraScreen() {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0FFF4),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFB7FFBA),
-        // Plant background image with white overlay
-        flexibleSpace: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/plant_bg.jpg',
-              fit: BoxFit.cover,
-            ),
-            Container(
-              color: const Color(0xAAFFFFFF), // white overlay to lighten photo
-            ),
-          ],
-        ),
-        // Logo in AppBar
-        title: Image.asset(
-          'assets/images/plantdoc_logo.png',
-          height: 120, // ← CHANGE THIS NUMBER to resize logo
-          fit: BoxFit.contain,
-        ),
-        iconTheme: const IconThemeData(color: Color(0xFF166534)),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            const Text(
-              'Leaf Scanner',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A1A),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Full-screen live preview
+          if (_isCameraReady && _cameraController != null)
+            Positioned.fill(child: CameraPreview(_cameraController!))
+          else
+            const Positioned.fill(
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white),
               ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Take or upload a photo of a leaf to detect disease',
-              style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
-            ),
-            const SizedBox(height: 24),
 
-            // Image preview box
-            GestureDetector(
-              onTap: _pickFromGallery,
-              child: Container(
-                width: double.infinity,
-                height: 280,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: _selectedImage != null
-                        ? const Color(0xFF166534)
-                        : const Color(0xFFE0E0E0),
-                    width: 2,
+          // Top logo bar
+          Positioned(
+            top: 0, left: 0, right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Image.asset(
+                      'assets/images/plantdoc_logo.png',
+                      height: 30,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    )
+                ),
+              ),
+            ),
+          ),
+
+          // Center scan frame
+          Center(
+            child: SizedBox(
+              width: 240,
+              height: 240,
+              child: CustomPaint(painter: _ScanFramePainter()),
+            ),
+          ),
+
+          // Hint label
+          Positioned(
+            bottom: 160,
+            left: 0, right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'Place leaf inside the frame',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Bottom controls
+          Positioned(
+            bottom: 0, left: 0, right: 0,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(40, 20, 40, 48),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.75),
+                    Colors.transparent,
                   ],
                 ),
-                child: _selectedImage != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
-                        child: Image.file(
-                          _selectedImage!,
-                          fit: BoxFit.cover,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Gallery — left
+                  GestureDetector(
+                    onTap: _pickFromGallery,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 58,
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.5),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.photo_library_rounded,
+                            color: Colors.white,
+                            size: 26,
+                          ),
                         ),
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Gallery',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Shutter — center
+                  GestureDetector(
+                    onTap: _isTakingPhoto ? null : _takePhoto,
+                    child: AnimatedScale(
+                      scale: _isTakingPhoto ? 0.88 : 1.0,
+                      duration: const Duration(milliseconds: 120),
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            width: 84,
+                            height: 84,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDCFCE7),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            // No chilli icon — using camera icon instead
-                            child: const Icon(
-                              Icons.camera_alt_outlined,
-                              size: 40,
-                              color: Color(0xFF166534),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Tap to upload leaf image',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF444444),
+                          Container(
+                            width: 68,
+                            height: 68,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'or use camera below',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF888888),
-                            ),
+                            child: _isTakingPhoto
+                                ? const Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : null,
                           ),
                         ],
                       ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Camera and Gallery buttons — glass effect
-            Row(
-              children: [
-                Expanded(
-                  child: _buildOptionButton(
-                    icon: Icons.camera_alt_outlined,
-                    label: 'Camera',
-                    onTap: _pickFromCamera,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildOptionButton(
-                    icon: Icons.photo_library_outlined,
-                    label: 'Gallery',
-                    onTap: _pickFromGallery,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Tips box
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFDCFCE7),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '📸  Tips for best results',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: Color(0xFF166534),
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text('• Take photo in good lighting',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
-                  Text('• Focus on a single leaf clearly',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
-                  Text('• Avoid blurry or dark images',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
-                  Text('• Include both sides of leaf if possible',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF166534))),
+
+                  // Right spacer (same width as gallery for symmetry)
+                  const SizedBox(width: 58),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Analyze button
-            if (_selectedImage != null)
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _analyzeImage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF166534),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+  // ─── PREVIEW SCREEN ───────────────────────────────────────────────────────
+  Widget _buildPreviewScreen() {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.file(_capturedImage!, fit: BoxFit.cover),
+          ),
+
+          // Top bar
+          Positioned(
+            top: 0, left: 0, right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: _retake,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 9),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.55),
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: const Row(
                           children: [
-                            SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
+                            Icon(Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white, size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'Retake',
+                              style: TextStyle(
                                 color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              'Analyzing...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.biotech_outlined, size: 22),
-                            SizedBox(width: 10),
-                            Text(
-                              'Analyze Leaf',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                    Image.asset(
+                      'assets/images/plantdoc_logo.png',
+                      height: 28,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
                 ),
               ),
-          ],
-        ),
+            ),
+          ),
+
+          // Bottom analyze
+          Positioned(
+            bottom: 0, left: 0, right: 0,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 48),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.8),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '📸  Image captured — ready to analyze',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 58,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _analyzeImage,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF166534),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Text('Analyzing leaf...',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700)),
+                              ],
+                            )
+                          : const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.biotech_outlined, size: 22),
+                                SizedBox(width: 10),
+                                Text('Analyze Leaf',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+// ─── Corner bracket scan frame painter ───────────────────────────────────────
+class _ScanFramePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    const double len = 28;
+    const double r = 8;
+    final w = size.width;
+    final h = size.height;
+
+    // Top-left
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, len)
+        ..lineTo(0, r)
+        ..arcToPoint(Offset(r, 0), radius: const Radius.circular(r))
+        ..lineTo(len, 0),
+      paint,
+    );
+    // Top-right
+    canvas.drawPath(
+      Path()
+        ..moveTo(w - len, 0)
+        ..lineTo(w - r, 0)
+        ..arcToPoint(Offset(w, r), radius: const Radius.circular(r))
+        ..lineTo(w, len),
+      paint,
+    );
+    // Bottom-left
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, h - len)
+        ..lineTo(0, h - r)
+        ..arcToPoint(Offset(r, h), radius: const Radius.circular(r), clockwise: false)
+        ..lineTo(len, h),
+      paint,
+    );
+    // Bottom-right
+    canvas.drawPath(
+      Path()
+        ..moveTo(w - len, h)
+        ..lineTo(w - r, h)
+        ..arcToPoint(Offset(w, h - r), radius: const Radius.circular(r), clockwise: false)
+        ..lineTo(w, h - len),
+      paint,
     );
   }
 
-  // Glass effect button for Camera and Gallery
-  Widget _buildOptionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.35),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: const Color(0xFF166534).withOpacity(0.5),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF166534).withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: const Color(0xFF166534), size: 22),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Color(0xFF166534),
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
