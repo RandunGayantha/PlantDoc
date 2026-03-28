@@ -5,70 +5,70 @@ import 'package:plantdoc/pages/camera.dart';
 import 'package:plantdoc/pages/fourm.dart';
 import 'package:plantdoc/pages/home.dart';
 import 'package:plantdoc/pages/map.dart';
-import 'package:plantdoc/pages/splash_screen.dart';
 import 'package:plantdoc/pages/profile.dart';
 
-// 1. We keep the async main function with initialized bindings for camera/maps
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-// 2. A clean, single MyApp widget that routes to the SplashScreen
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Plant Doc",
-      home: SplashScreen(),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-// 3. Your Splash Screen logic
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class _MyAppState extends State<MyApp> {
+  // Global variable for Theme state
+  bool _isDarkMode = false;
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NavigationPage()),
-      );
+  // Global function to toggle theme
+  void _toggleTheme(bool value) {
+    setState(() {
+      _isDarkMode = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/logo.png', width: 200),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(color: Colors.green),
-          ],
-        ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Plant Doc",
+      
+      // Light Theme configuration
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.green,
+      ),
+
+      // Dark Theme configuration
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.green,
+      ),
+
+      // This is what makes the whole app change!
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light, 
+
+      home: NavigationPage(
+        isDarkMode: _isDarkMode,
+        onThemeChanged: _toggleTheme,
       ),
     );
   }
 }
 
-// 4. Your clean Navigation Page with the BottomNavigationBar
+// NavigationPage now acts as the host for other pages with a notched BottomAppBar
 class NavigationPage extends StatefulWidget {
-  const NavigationPage({super.key});
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
+
+  const NavigationPage({
+    super.key, 
+    required this.isDarkMode, 
+    required this.onThemeChanged
+  });
 
   @override
   State<NavigationPage> createState() => _NavigationPageState();
@@ -77,36 +77,93 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   int _currentIndex = 0;
 
-  // I removed the "const" keyword from these pages just in case your 
-  // other dart files don't have const constructors yet.
-  final List<Widget> _pages = [
-    Home(),
-    GoogleMapsScreen(), // Make sure your map class is actually named Map() inside map.dart!
-    Camera(),
-    fourm(),
-    Profile(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    // We define _pages inside build so we can pass the theme variables.
+    // The Camera page is removed from this list because it's now handled by the center button.
+    final List<Widget> _pages = [
+      Home(), 
+      GoogleMapsScreen(),
+      fourm(),
+      ProfilePage(
+        isDarkMode: widget.isDarkMode,
+        onThemeChanged: widget.onThemeChanged,
+      ),
+    ];
+
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Crucial when you have more than 3 items!
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+      // The floating action button sits in the center
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Opens the camera page as a new screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Camera()),
+          );
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),
-          BottomNavigationBarItem(icon: Icon(Icons.camera), label: "Camera"),
-          BottomNavigationBarItem(icon: Icon(Icons.forum), label: "Forum"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        backgroundColor: const Color(0xFF2E7D32), // Dark green to match your design
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.document_scanner_outlined, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // The custom bottom app bar with a notch for the floating button
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        color: Colors.white,
+        elevation: 10,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // Left side tabs
+              _buildNavItem(Icons.home_filled, 'Home', 0),
+              _buildNavItem(Icons.map_outlined, 'Map', 1),
+              
+              // Empty space in the middle for the floating button
+              const SizedBox(width: 40), 
+              
+              // Right side tabs
+              _buildNavItem(Icons.people_outline, 'Forum', 2),
+              _buildNavItem(Icons.person_outline, 'Profile', 3),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper widget to build each individual tab item
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    bool isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      behavior: HitTestBehavior.opaque, // Ensures the whole area is clickable
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? const Color(0xFF2E7D32) : Colors.grey,
+            size: 24,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected ? const Color(0xFF2E7D32) : Colors.grey,
+            ),
+          ),
         ],
       ),
     );
