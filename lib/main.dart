@@ -7,67 +7,68 @@ import 'package:plantdoc/pages/home.dart';
 import 'package:plantdoc/pages/map.dart';
 import 'package:plantdoc/pages/profile.dart';
 
-// 1. We keep the async main function with initialized bindings for camera/maps
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-// 2. A clean, single MyApp widget that routes to the SplashScreen
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Plant Doc",
-      home: SplashScreen(),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-// 3. Your Splash Screen logic
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class _MyAppState extends State<MyApp> {
+  // Global variable for Theme state
+  bool _isDarkMode = false;
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NavigationPage()),
-      );
+  // Global function to toggle theme
+  void _toggleTheme(bool value) {
+    setState(() {
+      _isDarkMode = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/logo.png', width: 200),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(color: Colors.green),
-          ],
-        ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Plant Doc",
+      
+      // Light Theme configuration
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.green,
+      ),
+
+      // Dark Theme configuration
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.green,
+      ),
+
+      // This is what makes the whole app change!
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light, 
+
+      home: NavigationPage(
+        isDarkMode: _isDarkMode,
+        onThemeChanged: _toggleTheme,
       ),
     );
   }
 }
 
-// 4. Your custom Navigation Page with a notched BottomAppBar
+// NavigationPage now acts as the host for other pages with a notched BottomAppBar
 class NavigationPage extends StatefulWidget {
-  const NavigationPage({super.key});
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
+
+  const NavigationPage({
+    super.key, 
+    required this.isDarkMode, 
+    required this.onThemeChanged
+  });
 
   @override
   State<NavigationPage> createState() => _NavigationPageState();
@@ -76,16 +77,20 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   int _currentIndex = 0;
 
-  // The Camera page is removed from this list because it's now handled by the center button
-  final List<Widget> _pages = [
-    Home(),
-    GoogleMapsScreen(),
-    fourm(),
-    Profile(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    // We define _pages inside build so we can pass the theme variables.
+    // The Camera page is removed from this list because it's now handled by the center button.
+    final List<Widget> _pages = [
+      Home(), 
+      GoogleMapsScreen(),
+      fourm(),
+      ProfilePage(
+        isDarkMode: widget.isDarkMode,
+        onThemeChanged: widget.onThemeChanged,
+      ),
+    ];
+
     return Scaffold(
       body: _pages[_currentIndex],
       // The floating action button sits in the center
