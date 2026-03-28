@@ -8,67 +8,68 @@ import 'package:plantdoc/pages/map.dart';
 import 'package:plantdoc/pages/splash_screen.dart';
 import 'package:plantdoc/pages/profile.dart';
 
-// 1. We keep the async main function with initialized bindings for camera/maps
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-// 2. A clean, single MyApp widget that routes to the SplashScreen
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Plant Doc",
-      home: SplashScreen(),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-// 3. Your Splash Screen logic
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class _MyAppState extends State<MyApp> {
+  // Global variable for Theme state
+  bool _isDarkMode = false;
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NavigationPage()),
-      );
+  // Global function to toggle theme
+  void _toggleTheme(bool value) {
+    setState(() {
+      _isDarkMode = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/logo.png', width: 200),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(color: Colors.green),
-          ],
-        ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Plant Doc",
+      
+      // Light Theme configuration
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.green,
+      ),
+
+      // Dark Theme configuration
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.green,
+      ),
+
+      // This is what makes the whole app change!
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light, 
+
+      home: NavigationPage(
+        isDarkMode: _isDarkMode,
+        onThemeChanged: _toggleTheme,
       ),
     );
   }
 }
 
-// 4. Your clean Navigation Page with the BottomNavigationBar
+// NavigationPage now acts as the host for other pages
 class NavigationPage extends StatefulWidget {
-  const NavigationPage({super.key});
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
+
+  const NavigationPage({
+    super.key, 
+    required this.isDarkMode, 
+    required this.onThemeChanged
+  });
 
   @override
   State<NavigationPage> createState() => _NavigationPageState();
@@ -77,24 +78,24 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   int _currentIndex = 0;
 
-  // I removed the "const" keyword from these pages just in case your 
-  // other dart files don't have const constructors yet.
-  final List<Widget> _pages = [
-    Home(),
-    GoogleMapsScreen(), // Make sure your map class is actually named Map() inside map.dart!
-    Camera(),
-    fourm(),
-    Profile(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      Home(), // Assuming these are already defined
+      GoogleMapsScreen(),
+      Camera(),
+      fourm(),
+      ProfilePage(
+        isDarkMode: widget.isDarkMode,
+        onThemeChanged: widget.onThemeChanged,
+      ),
+    ];
+
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Crucial when you have more than 3 items!
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.green,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -102,7 +103,7 @@ class _NavigationPageState extends State<NavigationPage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Map"),
           BottomNavigationBarItem(icon: Icon(Icons.camera), label: "Camera"),
           BottomNavigationBarItem(icon: Icon(Icons.forum), label: "Forum"),
