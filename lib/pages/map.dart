@@ -26,7 +26,7 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GoogleMap(
-        mapType: MapType.hybrid,
+        mapType: MapType.normal,
         initialCameraPosition: _initialPosition,
         markers: _markers,
         myLocationEnabled: false,
