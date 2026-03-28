@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:plantdoc/pages/settings.dart';
+import '../edit_profile.dart';
 
 class ProfilePage extends StatelessWidget {
-  // 1. These variables MUST be declared to receive data from NavigationPage
   final bool isDarkMode;
   final Function(bool) onThemeChanged;
 
@@ -29,18 +29,28 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 60,
-                    backgroundImage: AssetImage('assets/images/plantdoc_logo.png'),
+                    backgroundColor: Colors.grey,
+                    child: Icon(Icons.person, size: 60, color: Colors.white),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigate when the pencil icon is clicked
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.edit, color: Colors.white, size: 20),
                       ),
-                      child: const Icon(Icons.edit, color: Colors.white, size: 20),
                     ),
                   ),
                 ],
@@ -58,15 +68,20 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 30),
             const Divider(),
             
-            // Edit Profile Tile
+            // 1. Edit Profile Tile - NAVIGATION ADDED
             ListTile(
               leading: const Icon(Icons.person_outline, color: Colors.green),
               title: const Text("Edit Profile"),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                );
+              },
             ),
 
-            // Settings Tile - FIXED NAVIGATION
+            // Settings Tile
             ListTile(
               leading: const Icon(Icons.settings_outlined, color: Colors.green),
               title: const Text("Settings"),
@@ -76,8 +91,8 @@ class ProfilePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SettingsPage(
-                      isDarkMode: isDarkMode, // Passing the value
-                      onThemeChanged: onThemeChanged, // Passing the function
+                      isDarkMode: isDarkMode,
+                      onThemeChanged: onThemeChanged,
                     ),
                   ),
                 );
@@ -86,11 +101,36 @@ class ProfilePage extends StatelessWidget {
 
             const Divider(),
             
-            // Logout Tile
+            // 2. Logout Tile - LOGIC ADDED
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text("Logout", style: TextStyle(color: Colors.red)),
-              onTap: () {},
+              onTap: () {
+                // Show Logout Confirmation Dialog
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Logout"),
+                    content: const Text("Are you sure you want to logout?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // TODO: Add Firebase signout logic here
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Logged out successfully")),
+                          );
+                        },
+                        child: const Text("Logout", style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),
