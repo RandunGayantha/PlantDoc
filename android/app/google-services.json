@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "665279055037",
+    "project_id": "plantdocdb",
+    "storage_bucket": "plantdocdb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665279055037:android:faf7492a5ae1a587e363d4",
+        "android_client_info": {
+          "package_name": "com.example.plantdoc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBexqnxZJRrSXyyJWtw0aqAoOLtdlzV5Hg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
