@@ -15,6 +15,13 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+<<<<<<< Updated upstream
+=======
+
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
+>>>>>>> Stashed changes
     }
 
     buildTypes {
