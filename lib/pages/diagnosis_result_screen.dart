@@ -486,7 +486,7 @@ class _DiagnosisResultScreenState extends State<DiagnosisResultScreen>
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: chilliDiseases.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, i) {
               final d = chilliDiseases[i];
               final selected = d.id == _selectedDisease.id;
