@@ -1,6 +1,9 @@
 // ignore_for_file: deprecated_member_use
+import 'package:plantdoc/pages/create_post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:plantdoc/pages/camera.dart';
+
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
@@ -270,7 +273,11 @@ class _HomeState extends State<Home> {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(
+              builder: (_) => const CreatePostScreen(),
+            ));
+          },
           child: const Text(
             'View All',
             style: TextStyle(
