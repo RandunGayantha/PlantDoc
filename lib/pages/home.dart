@@ -1,12 +1,11 @@
 // ignore_for_file: deprecated_member_use
-import 'package:plantdoc/pages/create_post_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:plantdoc/pages/camera.dart';
-
-
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'package:plantdoc/pages/camera.dart';
+import 'package:plantdoc/pages/create_post_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
