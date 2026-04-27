@@ -1,9 +1,10 @@
-// ignore_for_file: deprecated_member_use
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'classifier.dart';
 import 'diagnosis_result_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -18,6 +19,43 @@ class _CameraState extends State<Camera> {
   final Classifier _classifier = Classifier();
   final ImagePicker _picker = ImagePicker();
 
+Future<Position> _getLocation() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    throw Exception("Location services are disabled");
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  return await Geolocator.getCurrentPosition();
+}
+
+Future<void> _saveScanToFirebase(String disease, double confidence) async {
+  try {
+    print("🔥 Saving scan...");
+    print("📍 Getting location...");
+
+    Position pos = await _getLocation();
+
+    print("📍 ${pos.latitude}, ${pos.longitude}");
+
+    await FirebaseFirestore.instance.collection('scans').add({
+      'disease': disease,
+      'confidence': confidence,
+      'latitude': pos.latitude,
+      'longitude': pos.longitude,
+      'timestamp': DateTime.now(),
+    });
+
+    print("✅ Scan saved");
+  } catch (e) {
+    print("❌ Error saving scan: $e");
+  }
+}
   @override
   void initState() {
     super.initState();
@@ -63,6 +101,7 @@ class _CameraState extends State<Camera> {
       final result = await _classifier.predict(_selectedImage!);
       final String label = result['label'] ?? 'Unknown';
       final double confidence = result['confidence'] ?? 0.0;
+      await _saveScanToFirebase(label, confidence);
       print('✅ AI done: $label ($confidence)');
       print('📱 Navigating to result...');
 
