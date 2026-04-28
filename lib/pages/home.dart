@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
-import 'package:plantdoc/pages/create_post_screen.dart';
+
 import 'package:flutter/material.dart';
-import 'package:plantdoc/pages/camera.dart';
 
 
 import 'dart:convert';
@@ -272,12 +271,8 @@ class _HomeState extends State<Home> {
             color: Color(0xFF0F172A),
           ),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: (_) => const CreatePostScreen(),
-            ));
-          },
+            TextButton(
+          onPressed: () {},
           child: const Text(
             'View All',
             style: TextStyle(
