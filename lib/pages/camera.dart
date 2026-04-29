@@ -44,7 +44,7 @@ class _CameraState extends State<Camera> {
   // Pick image from gallery
   Future<void> _pickFromGallery() async {
     final XFile? photo = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: ImageSource.camera,
       imageQuality: 90,
     );
     if (photo != null) {
