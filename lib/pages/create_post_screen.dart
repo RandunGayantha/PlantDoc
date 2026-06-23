@@ -1,0 +1,248 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class CreatePostScreen extends StatefulWidget {
+  const CreatePostScreen({super.key});
+
+  @override
+  State<CreatePostScreen> createState() => _CreatePostScreenState();
+}
+
+class _CreatePostScreenState extends State<CreatePostScreen> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
+  File? _selectedImage;
+  bool _isLoading = false;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? picked = await _picker.pickImage(
+      source: source,
+      imageQuality: 70,
+    );
+    if (picked != null) {
+      setState(() => _selectedImage = File(picked.path));
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _submitPost() async {
+    final title = _titleController.text.trim();
+    final description = _descController.text.trim();
+
+    if (title.isEmpty) {
+      _showSnackbar('Please enter a title', isError: true);
+      return;
+    }
+    if (description.isEmpty) {
+      _showSnackbar('Please enter a description', isError: true);
+      return;
+    }
+    if (_selectedImage == null) {
+      _showSnackbar('Please select an image', isError: true);
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 1. Upload image to Firebase Storage
+      final String fileName =
+          'posts/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final Reference storageRef =
+          FirebaseStorage.instance.ref().child(fileName);
+      final UploadTask uploadTask = storageRef.putFile(_selectedImage!);
+      final TaskSnapshot snapshot = await uploadTask;
+
+      // 2. Get the download URL
+      final String imageUrl = await snapshot.ref.getDownloadURL();
+
+      // 3. Save to Firestore "posts" collection
+      // %% Member 6 reads from this SAME collection - do NOT rename fields
+      await FirebaseFirestore.instance.collection('posts').add({
+        'title': title,
+        'description': description,
+        'image': imageUrl,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      _showSnackbar('Post submitted successfully!');
+      _titleController.clear();
+      _descController.clear();
+      setState(() => _selectedImage = null);
+
+    } catch (e) {
+      _showSnackbar('Error: $e', isError: true);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showSnackbar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Ask an Expert'),
+        backgroundColor: const Color(0xFF2E7D32),
+        foregroundColor: Colors.white,
+      ),
+      body: _isLoading
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: Color(0xFF2E7D32)),
+                  SizedBox(height: 16),
+                  Text('Uploading your post...'),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  // %% Title field %%
+                  const Text('Title',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      hintText: 'e.g. Yellow spots on my tomato leaves',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLength: 100,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // %% Description field %%
+                  const Text('Description',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _descController,
+                    decoration: const InputDecoration(
+                      hintText: 'Describe what you see on the plant...',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 4,
+                    maxLength: 500,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // %% Image picker %%
+                  const Text('Photo',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: _showImageSourceDialog,
+                    child: Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey[100],
+                      ),
+                      child: _selectedImage != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                _selectedImage!,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_a_photo,
+                                    size: 48, color: Colors.grey),
+                                SizedBox(height: 8),
+                                Text('Tap to add a photo',
+                                    style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // %% Submit button %%
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _submitPost,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2E7D32),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text('Submit Post',
+                          style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+    );
+  }
+}
